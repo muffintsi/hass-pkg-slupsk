@@ -22,6 +22,7 @@ It allows managing the waste collection schedule for the city of Słupsk and oth
 - Special sensor containing a list of waste to be put out tomorrow (ending of name wtp)
 
 Przykład karty z prezentacją danych:
+
 Example of a card with data presentation:
 
 https://github.com/thomasloven/lovelace-auto-entities
@@ -47,6 +48,7 @@ sort:
   attribute: Data
 ```
 Przykład automatyzacji przypominającej o wystawieniu odpadow na jutro:
+
 Example of automation reminding to put waste out for tomorrow:
 ```
 alias: Trash - Wystaw odpady notify
