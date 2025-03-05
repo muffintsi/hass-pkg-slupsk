@@ -7,7 +7,8 @@
   "maintainers": ["muffintsi"],
   "domains": ["pgk_slupsk"],
   "requirements": [],
-  "dependencies": []
+  "dependencies": [],
+  "homeassistant": "2024.12.01",
   "render_readme": true,
   "zip_release": false
 }
