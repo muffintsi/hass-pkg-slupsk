@@ -8,6 +8,7 @@ WASTE_TYPE_ICONS = {
     "11": "mdi:bottle-wine",
     "2": "mdi:trash-can",
     "7": "mdi:dump-truck",
+    "26": "mdi:tshirt-crew",
 }
 
 WASTE_TYPES = {
