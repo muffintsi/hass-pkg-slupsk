@@ -1,0 +1,11 @@
+{
+  "domain": "pgk_slupsk",
+  "name": "PGK Słupsk",
+  "version": "0.1.0",
+  "documentation": "",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["daniel@filipczak.net"],
+  "iot_class": "cloud_polling",
+  "config_flow": true
+}

@@ -1,0 +1,13 @@
+{
+  "name": "PGK Słupsk",
+  "description": "Integration with the waste collection schedule of the Przedsiębiorstwa Gospodarki Komunalnej Sp. z o.o. in Słupsk.",
+  "country": "PL",
+  "content_in_root": false,
+  "category": "integration",
+  "maintainers": ["muffintsi"],
+  "domains": ["pgk_slupsk"],
+  "requirements": [],
+  "dependencies": []
+  "render_readme": true,
+  "zip_release": false
+}

@@ -1,0 +1,25 @@
+{
+  "title": "PGK Słupsk",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Wybór miejscowości i typu zabudowy",
+        "description": "Wybierz miejscowość, dla której chcesz skonfigurować harmonogram odbioru odpadów.",
+        "data": {
+          "city_id": "Miejscowość i typ zabudowy"
+        }
+      },
+      "city": {
+        "title": "Wybór ulicy",
+        "description": "Wybierz ulicę dla wybranego miasta.",
+        "data": {
+          "street_id": "Ulica"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nie można połączyć się z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
+      "unknown": "Wystąpił nieznany błąd. Spróbuj ponownie później."
+    }
+  }
+}
