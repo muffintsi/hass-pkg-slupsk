@@ -7,6 +7,6 @@
   "dependencies": [],
   "codeowners": ["muffintsi"],
   "iot_class": "cloud_polling",
-  "supported_domains": ["sensor"]
+  "supported_domains": ["sensor"],
   "config_flow": true
 }
