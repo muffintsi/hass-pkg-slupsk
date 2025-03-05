@@ -1,3 +1,6 @@
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=pgk_slupsk)
+
+
 Integracja z harmonogramem wywozu odpadów Przedsiębiorstwa Gospodarki Komunalnej Sp. z o.o. w Słupsku.
 
 Pozwala na obsługę w Home Assistant harmonogramu wywozu odpadów miasta Słupsk i pozostałych miejscowości obsługiwanych przez PGK Słupsk.
