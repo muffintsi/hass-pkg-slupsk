@@ -3,22 +3,30 @@
   "config": {
     "step": {
       "user": {
-        "title": "Wybór miejscowości i typu zabudowy",
-        "description": "Wybierz miejscowość, dla której chcesz skonfigurować harmonogram odbioru odpadów.",
+        "title": "Wybór regionu",
+        "description": "Wybierz region (miasto i typ zabudowy).",
         "data": {
-          "city_id": "Miejscowość i typ zabudowy"
+          "region": "Region"
         }
       },
-      "city": {
-        "title": "Wybór ulicy",
-        "description": "Wybierz ulicę dla wybranego miasta.",
+      "location_search": {
+        "title": "Wyszukiwanie ulicy",
+        "description": "Wpisz frazę, aby wyszukać ulicę/lokalizację w wybranym regionie.",
         "data": {
-          "street_id": "Ulica"
+          "search_term": "Fraza"
+        }
+      },
+      "location_select": {
+        "title": "Wybór ulicy",
+        "description": "Wybierz ulicę/lokalizację z listy wyników.",
+        "data": {
+          "location": "Ulica / lokalizacja"
         }
       }
     },
     "error": {
       "cannot_connect": "Nie można połączyć się z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
+      "no_results": "Brak wyników dla podanej frazy. Spróbuj innej.",
       "unknown": "Wystąpił nieznany błąd. Spróbuj ponownie później."
     }
   }

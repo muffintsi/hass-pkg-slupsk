@@ -3,23 +3,80 @@
   "config": {
     "step": {
       "user": {
-        "title": "Wybór miejscowości i typu zabudowy",
-        "description": "Wybierz miejscowość, dla której chcesz skonfigurować harmonogram odbioru odpadów.",
+        "title": "Region selection",
+        "description": "Select region (city and building type).",
         "data": {
-          "city_id": "Miejscowość i typ zabudowy"
+          "region": "Region"
         }
       },
-      "city": {
-        "title": "Wybór ulicy",
-        "description": "Wybierz ulicę dla wybranego miasta.",
+      "location_search": {
+        "title": "Location search",
+        "description": "Enter a search phrase (e.g., street name) to find a location.",
         "data": {
-          "street_id": "Ulica"
+          "search_term": "Search phrase"
+        }
+      },
+      "location_select": {
+        "title": "Location selection",
+        "description": "Select a location from the search results.",
+        "data": {
+          "location": "Location"
         }
       }
     },
     "error": {
-      "cannot_connect": "Nie można połączyć się z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
-      "unknown": "Wystąpił nieznany błąd. Spróbuj ponownie później."
+      "cannot_connect": "Cannot connect to the server. Check your internet connection and try again.",
+      "no_results": "No results for the provided search phrase. Try a different one.",
+      "unknown": "An unknown error occurred. Please try again later."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "waste_sensor": {
+        "name": "Waste",
+        "state_attributes": {
+          "Waste type": {
+            "name": "Waste type"
+          },
+          "Waste type (id)": {
+            "name": "Waste type (id)"
+          },
+          "Dates": {
+            "name": "Dates"
+          },
+          "Date": {
+            "name": "Date"
+          },
+          "Days until pickup": {
+            "name": "Days until pickup"
+          },
+          "Updated": {
+            "name": "Updated"
+          },
+          "Refreshed": {
+            "name": "Odświeżone"
+          },
+          "Container color": {
+            "name": "Container color"
+          }
+        }
+      },
+      "wtp_sensor": {
+        "name": "Waste to prepare",
+        "state_attributes": {
+          "Refreshed": {
+            "name": "Refreshed"
+          }
+        }
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "waste_pickup_tomorrow": "Waste pickup tomorrow"
+    },
+    "action_type": {
+      "send_waste_pickup_notification": "Send waste pickup notification"
     }
   }
 }

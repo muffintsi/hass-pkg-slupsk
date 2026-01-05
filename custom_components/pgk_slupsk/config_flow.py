@@ -1,125 +1,224 @@
 import logging
-from homeassistant import config_entries
-from homeassistant.core import callback
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 import voluptuous as vol
+from homeassistant import config_entries
 
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+
+TOKEN_URL = "https://pgkslupsk.pl/api/createToken"
+CMS_GRAPHQL_URL = "https://cms.pgkslupsk.pl/graphql"
+
+HEADERS_BASE = {
+    "User-Agent": "WebKit=Android",
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+}
+
+QUERY_REGIONS = """
+query Regions {
+  PGKExtended {
+    wasteSchedulesRegionsPGK {
+      regions {
+        id
+        name
+      }
+    }
+  }
+}
+"""
+
+QUERY_LOCATIONS = """
+query getLocations($regionName: String!, $searchTerm: String!) {
+  PGKExtended {
+    wasteSchedulesLocationsByRegionPGK(
+      regionName: $regionName
+      searchTerm: $searchTerm
+    ) {
+      locations
+    }
+  }
+}
+"""
+
+
+async def _post_json(
+    session: aiohttp.ClientSession,
+    url: str,
+    headers: Dict[str, str],
+    payload: Any,
+) -> Dict[str, Any]:
+    async with session.post(
+        url,
+        headers=headers,
+        json=payload,
+        timeout=aiohttp.ClientTimeout(total=30),
+    ) as resp:
+        # API czasem zwraca z błędnym content-type, więc wymuszamy None
+        return await resp.json(content_type=None)
+
+
+async def _create_token(session: aiohttp.ClientSession) -> Optional[str]:
+    try:
+        data = await _post_json(session, TOKEN_URL, HEADERS_BASE, {})
+        return (data or {}).get("token")
+    except Exception as err:  # noqa: BLE001
+        _LOGGER.warning("PGK token error: %s", err)
+        return None
+
+
+async def _fetch_regions(session: aiohttp.ClientSession, token: Optional[str]) -> List[str]:
+    headers = dict(HEADERS_BASE)
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    payload = {"operationName": "Regions", "query": QUERY_REGIONS, "variables": {}}
+    data = await _post_json(session, CMS_GRAPHQL_URL, headers, payload)
+
+    regions = (
+        (data or {}).get("data", {})
+        .get("PGKExtended", {})
+        .get("wasteSchedulesRegionsPGK", {})
+        .get("regions", [])
+    )
+
+    names: List[str] = []
+    if isinstance(regions, list):
+        for r in regions:
+            if isinstance(r, dict) and r.get("name"):
+                names.append(str(r["name"]))
+
+    # Usuwamy duplikaty (case-insensitive) i sortujemy stabilnie
+    uniq: Dict[str, str] = {}
+    for n in names:
+        key = n.strip().casefold()
+        if key and key not in uniq:
+            uniq[key] = n.strip()
+
+    return sorted(uniq.values())
+
+
+async def _fetch_locations(
+    session: aiohttp.ClientSession,
+    token: Optional[str],
+    region: str,
+    search_term: str,
+) -> List[str]:
+    headers = dict(HEADERS_BASE)
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    payload = {
+        "operationName": "getLocations",
+        "query": QUERY_LOCATIONS,
+        "variables": {"regionName": region, "searchTerm": search_term},
+    }
+
+    data = await _post_json(session, CMS_GRAPHQL_URL, headers, payload)
+    locs = (
+        (data or {}).get("data", {})
+        .get("PGKExtended", {})
+        .get("wasteSchedulesLocationsByRegionPGK", {})
+        .get("locations", [])
+    )
+
+    if not isinstance(locs, list):
+        return []
+
+    # Prosty uniq + sort
+    out = sorted({str(x).strip() for x in locs if x})
+    return out
+
+
 class PGKSlupskConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Przepływ konfiguracji dla PGK Słupsk."""
+    """Config flow dla PGK Słupsk (nowe API: region + location)."""
+
+    VERSION = 2
 
     async def async_step_user(self, user_input=None):
-        """Pierwszy krok konfiguracji - wybór miasta."""
-        errors = {}
+        """Krok 1: wybór regionu."""
+        errors: Dict[str, str] = {}
 
         if user_input is not None:
-            # Zapisujemy city_id i przechodzimy do następnego kroku (wybór ulicy)
-            city_id = user_input["city_id"]
-            self.context["city_id"] = city_id
+            self.context["region"] = user_input["region"]
+            return await self.async_step_location_search()
 
-            # Pobieramy dostępne ulice
-            streets = await self.get_streets(city_id)
+        async with aiohttp.ClientSession() as session:
+            token = await _create_token(session)
+            regions = await _fetch_regions(session, token)
 
-            # Wyświetlamy listę ulic w formularzu
-            return self.async_show_form(
-                step_id="city",
-                data_schema=vol.Schema({
-                    vol.Required("street_id"): vol.In({street["id"]: street["name"] for street in streets}),
-                }),
-                errors=errors,
-            )
-
-        # Pobieramy listę miast
-        cities = await self.get_cities()
+        if not regions:
+            errors["base"] = "cannot_connect"
+            regions = ["(brak danych)"]
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({
-                vol.Required("city_id"): vol.In({city["id"]: city["name"] for city in cities}),
-            }),
+            data_schema=vol.Schema({vol.Required("region"): vol.In(regions)}),
             errors=errors,
         )
 
-    async def async_step_city(self, user_input=None):
-        """Drugi krok konfiguracji - wybór ulicy."""
-        errors = {}
+    async def async_step_location_search(self, user_input=None):
+        """Krok 2: wpisanie frazy do wyszukiwania ulicy/lokalizacji."""
+        errors: Dict[str, str] = {}
 
         if user_input is not None:
-            street_id = user_input["street_id"]
-            city_id = self.context["city_id"]
-
-            # Pobieramy nazwę miasta oraz ulicy
-            city_name = next(city["name"] for city in await self.get_cities() if city["id"] == city_id)
-            street_name = next(street["name"] for street in await self.get_streets(city_id) if street["id"] == street_id)
-
-            # Zapisujemy city_id i street_id w konfiguracji
-            return self.async_create_entry(
-                title=f"{city_name} - {street_name}",
-                data={"city_id": city_id, "street_id": street_id},
-            )
-
-        # Pobieramy dostępne ulice na podstawie city_id
-        city_id = self.context.get("city_id")
-        streets = await self.get_streets(city_id)
+            search_term = (user_input.get("search_term") or "").strip()
+            if not search_term:
+                errors["search_term"] = "required"
+            else:
+                self.context["search_term"] = search_term
+                return await self.async_step_location_select()
 
         return self.async_show_form(
-            step_id="city",
-            data_schema=vol.Schema({
-                vol.Required("street_id"): vol.In({street["id"]: street["name"] for street in streets}),
-            }),
+            step_id="location_search",
+            data_schema=vol.Schema({vol.Required("search_term"): str}),
             errors=errors,
         )
 
-    async def get_cities(self):
-        """Pobierz dostępne miasta z API."""
-        url = "https://pgkwywozy.infocity.pl/Api/GetCities"
-        headers = {
-            "User-Agent": "WebKit=Android",
-            "Content-Type": "application/json",
-        }
+    async def async_step_location_select(self, user_input=None):
+        """Krok 3: wybór location z listy wyników wyszukiwania."""
+        errors: Dict[str, str] = {}
 
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=headers, timeout=10) as response:
-                    response.raise_for_status()
-                    data = await response.json()
-                    _LOGGER.debug(f"Odpowiedź z API GetCities: {data}")
+        region = self.context.get("region")
+        search_term = self.context.get("search_term")
+        if not region or not search_term:
+            return await self.async_step_user()
 
-                    # Tworzymy listę miast
-                    cities = [{"id": city["Id"], "name": city["Nazwa"]} for city in data]
-                    return cities
-        except aiohttp.ClientError as err:
-            _LOGGER.error(f"Błąd podczas pobierania miast: {err}")
-            return []
+        if user_input is not None:
+            location = user_input["location"]
+            title = f"{region} - {location}"
+            return self.async_create_entry(
+                title=title,
+                data={
+                    "type": "individual",
+                    "region": region,
+                    "location": location,
+                },
+            )
 
-    async def get_streets(self, city_id):
-        """Pobierz dostępne ulice dla wybranego miasta z API."""
-        url = f"https://pgkwywozy.infocity.pl/Api/GetStreets/{city_id}?orderInfo=true"
-        headers = {
-            "User-Agent": "WebKit=Android",
-            "Content-Type": "application/json",
-        }
+        async with aiohttp.ClientSession() as session:
+            token = await _create_token(session)
+            locations = await _fetch_locations(session, token, region, search_term)
 
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=headers, timeout=10) as response:
-                    response.raise_for_status()
-                    data = await response.json()
-                    _LOGGER.debug(f"Odpowiedź z API GetStreets: {data}")
+        if not locations:
+            errors["base"] = "no_results"
+            # Pozwól wrócić do wyszukiwania bez crasha
+            return self.async_show_form(
+                step_id="location_select",
+                data_schema=vol.Schema({vol.Required("location"): vol.In({})}),
+                errors=errors,
+                description_placeholders={
+                    "region": str(region),
+                    "search_term": str(search_term),
+                },
+            )
 
-                    # Tworzymy listę ulic z odpowiedzi
-                    streets = [{"id": street["Id"], "name": street["Nazwa"]} for street in data]
-                    return streets
-        except aiohttp.ClientError as err:
-            _LOGGER.error(f"Błąd podczas pobierania ulic: {err}")
-            return []
-
-    @staticmethod
-    @callback
-    def add_schema():
-        """Zwraca schemat formularza."""
-        import voluptuous as vol
-        return vol.Schema({})
+        return self.async_show_form(
+            step_id="location_select",
+            data_schema=vol.Schema({vol.Required("location"): vol.In(locations)}),
+            errors=errors,
+        )

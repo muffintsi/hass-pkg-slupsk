@@ -1,5 +1,36 @@
+# PGK Słupsk – Harmonogram odbioru odpadów - Waste Collection Schedule
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=pgk_slupsk)
 
+# Changelog
+
+## [2.0.0] – 2026-01-05
+### Added
+- Przyciski odświeżania danych offline i sensorów.
+- Kalendarz zwraca True kiedy wydarzenie wystepuje
+- Całodobe wydarzenie odbiowu frakcji w kalendarzu
+- Automatyzacje w oparciu o sensor specjalny zawierający listę odpadów do wystawienia na jutro
+
+### Changed
+- Nowy mechanizm pobierania harmonogramu
+
+### Fixed
+- Obsługa nowego API PGK
+- Zmieniony config flow z wyszukiwaniem ulic wymuszony nowym API
+
+## [2.0.0] – 2026-01-05
+
+### Added
+- Offline data refresh buttons and sensor refresh controls.
+- Calendar returns `True` when an event occurs.
+- All-day waste collection events in the calendar.
+- Automations based on a dedicated sensor containing the list of waste types to be collected the next day.
+
+### Changed
+- New schedule fetching mechanism.
+
+### Fixed
+- Support for the new PGK API.
+- Updated config flow with street search, required by the new API.
 
 Integracja z harmonogramem wywozu odpadów Przedsiębiorstwa Gospodarki Komunalnej Sp. z o.o. w Słupsku.
 

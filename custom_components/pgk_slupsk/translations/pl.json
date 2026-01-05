@@ -3,24 +3,82 @@
   "config": {
     "step": {
       "user": {
-        "title": "Wybór miejscowości i typu zabudowy",
-        "description": "Wybierz miejscowość, dla której chcesz skonfigurować harmonogram odbioru odpadów.",
+        "title": "Wybór regionu",
+        "description": "Wybierz region (miasto i typ zabudowy).",
         "data": {
-          "city_id": "Miejscowość i typ zabudowy"
+          "region": "Region"
         }
       },
-      "city": {
-        "title": "Wybór ulicy",
-        "description": "Wybierz ulicę dla wybranego miasta.",
+      "location_search": {
+        "title": "Wyszukiwanie ulicy",
+        "description": "Wpisz frazę, aby wyszukać ulicę/lokalizację w wybranym regionie.",
         "data": {
-          "street_id": "Ulica"
+          "search_term": "Fraza"
+        }
+      },
+      "location_select": {
+        "title": "Wybór ulicy",
+        "description": "Wybierz ulicę/lokalizację z listy wyników.",
+        "data": {
+          "location": "Ulica / lokalizacja"
         }
       }
     },
     "error": {
       "cannot_connect": "Nie można połączyć się z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.",
+      "no_results": "Brak wyników dla podanej frazy. Spróbuj innej.",
       "unknown": "Wystąpił nieznany błąd. Spróbuj ponownie później."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "waste_sensor": {
+        "name": "Odpady",
+        "state_attributes": {
+          "Waste type": {
+            "name": "Typ odpadu"
+          },
+          "Waste type (id)": {
+            "name": "Typ odpadu (ID)"
+          },
+          "Dates": {
+            "name": "Daty odbiorów"
+          },
+          "Date": {
+            "name": "Data"
+          },
+          "Days until pickup": {
+            "name": "Dni do odbioru"
+          },
+          "Updated": {
+            "name": "Zaktualizowane"
+          },
+          "Refreshed": {
+            "name": "Odświeżone"
+          },
+          "Container color": {
+            "name": "Kolor pojemnika"
+          }
+        }
+      },
+      "wtp_sensor": {
+        "name": "Odpady",
+        "state_attributes": {
+          "Refreshed": {
+            "name": "Odświeżone"
+          }
+        }
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "waste_pickup_tomorrow": "Odpady do przygotowania na jutro"
+    },
+    "action_type": {
+      "send_waste_pickup_notification": "Wyślij powiadomienie o odpadach"
     }
   }
 }
+
 
