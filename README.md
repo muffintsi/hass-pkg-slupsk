@@ -1,4 +1,10 @@
 # PGK Słupsk – Harmonogram odbioru odpadów - Waste Collection Schedule
+
+![GitHub Downloads](https://img.shields.io/github/downloads/muffintsi/hass-pkg-slupsk/total)
+![GitHub Stars](https://img.shields.io/github/stars/muffintsi/hass-pkg-slupsk)
+![GitHub Release](https://img.shields.io/github/v/release/muffintsi/hass-pkg-slupsk)
+![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)
+![License](https://img.shields.io/github/license/muffintsi/hass-pkg-slupsk)
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=pgk_slupsk)
 
 # Changelog
