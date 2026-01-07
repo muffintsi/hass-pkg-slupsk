@@ -5,21 +5,22 @@
 ![GitHub Release](https://img.shields.io/github/v/release/muffintsi/hass-pkg-slupsk)
 ![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)
 ![License](https://img.shields.io/github/license/muffintsi/hass-pkg-slupsk)
+
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=pgk_slupsk)
 
 # Changelog
 
 ## [2.0.0] – 2026-01-05
-### Added
+### Dodano
 - Przyciski odświeżania danych offline i sensorów.
 - Kalendarz zwraca True kiedy wydarzenie wystepuje
 - Całodobe wydarzenie odbiowu frakcji w kalendarzu
 - Automatyzacje w oparciu o sensor specjalny zawierający listę odpadów do wystawienia na jutro
 
-### Changed
+### Zmieniono
 - Nowy mechanizm pobierania harmonogramu
 
-### Fixed
+### Poprawiono
 - Obsługa nowego API PGK
 - Zmieniony config flow z wyszukiwaniem ulic wymuszony nowym API
 
