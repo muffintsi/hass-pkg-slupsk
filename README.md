@@ -2,7 +2,7 @@
 
 ![GitHub Downloads](https://img.shields.io/github/downloads/muffintsi/hass-pkg-slupsk/total)
 ![GitHub Stars](https://img.shields.io/github/stars/muffintsi/hass-pkg-slupsk)
-![GitHub Release](https://img.shields.io/github/v/release/muffintsi/hass-pkg-slupsk)
+[![GitHub Release](https://img.shields.io/github/v/release/muffintsi/hass-pkg-slupsk)](https://github.com/muffintsi/hass-pkg-slupsk/releases)
 ![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)
 ![License](https://img.shields.io/github/license/muffintsi/hass-pkg-slupsk)
 
